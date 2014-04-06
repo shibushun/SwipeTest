@@ -12,21 +12,26 @@ CCScene* HelloWorld::scene()
 
 bool HelloWorld::init()
 {
-    if ( !CCLayer::init() )
-    {
-        return false;
-    }
+	if ( !CCLayer::init() )
+	{
+		return false;
+	}
 	
-    this->setTouchEnabled(true);
+	this->setTouchEnabled(true);
 	
-    CCSize size = CCDirector::sharedDirector()->getWinSize();
+	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
-	ball = CCSprite::create("button.png");
-    ball->setPosition( ccp(size.width/2, size.height/2) );
-	ball->setTag(1);
-    this->addChild(ball);
+	ball = CCSprite::create("ball.png");
+	ball->setPosition( ccp(size.width/2, size.height/2) );
+	this->addChild(ball);
 	
-   return true;
+	// show direction
+	CCLabelTTF* directionLabel = CCLabelTTF::create("direction", "arial", 24);
+	directionLabel->setPosition(ccp(size.width/2, size.height*4/5));
+	directionLabel->setTag(1);
+	this->addChild(directionLabel);
+	
+	return true;
 }
 
 void HelloWorld::xtTouchesBegan(CCPoint position)
@@ -41,38 +46,43 @@ void HelloWorld::xtTouchesEnded(CCPoint position)
 
 void HelloWorld::xtSwipeGesture(XTTouchDirection direction, float distance, float speed)
 {
-    std::string directionStr = "";
-	int directionX = 0;
-	int directionY = 0;
+    std::string directionStr;
+	int directionX, directionY;
+
     switch (direction) {
         case XTLayer::UP:
 			directionStr = "UP";
+			directionX = 0;
 			directionY = 1;
 			break;
         case XTLayer::DOWN:
 			directionStr = "DOWN";
+			directionX = 0;
 			directionY = -1;
 			break;
         case XTLayer::LEFT:
 			directionStr = "LEFT";
-			directionX = 1;
+			directionX = -1;
+			directionY = 0;
 			break;
         case XTLayer::RIGHT:
 			directionStr = "RIGHT";
-			directionY = -1;
+			directionX = 1;
+			directionY = 0;
 			break;
         default:
 			break;
     }
 
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
-
-	float duration = speed;
-	float distX = ball->getPositionX() + size.width * 0.1 * directionX;
-	float distY = ball->getPositionY() + size.height * 0.1 * directionY;
-	CCMoveTo* actionMove = CCMoveTo::create(duration, ccp(distX, distY));
+	float duration = 1/speed;
+	float distX = distance * directionX;
+	float distY = distance * directionY;
+	CCMoveBy* actionMove = CCMoveBy::create(duration, ccp(distX, distY));
 	
 	ball->runAction(actionMove);
 	
     CCLog("xtSwipeGesture direction: %s, distance: %f, speed: %f", directionStr.c_str(), distance, speed);
+
+	CCLabelTTF* label = (CCLabelTTF *)this->getChildByTag(1);
+	label->setString(directionStr.c_str());
 }

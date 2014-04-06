@@ -12,12 +12,11 @@ public:
     CREATE_FUNC(HelloWorld);
 	
 	CCSprite* ball;
-	bool ballTouch;
 
 	virtual void xtTouchesBegan(CCPoint position);
     virtual void xtTouchesEnded(CCPoint position);
 
-    virtual void xtSwipeGesture(XTTouchDirection direction, float distance, float speed);
+    virtual void xtSwipeGesture(XTTouchDirection direction, float distance, float speed);	
 };
 
 #endif // __HELLOWORLD_SCENE_H__
